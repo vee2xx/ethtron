@@ -1,25 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route,  Link} from 'react-router-dom';
+import React, { useState, useEffect }  from "react";
+import Accounts from "./containers/accounts";
+import Contracts from "./containers/contracts";
+import History from "./containers/history";
+import SignInScreen from "./containers/signinscreen";
+import Navigation from "./components/navigation";
+import Web3 from 'web3';
+
+
+
+const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"))
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+      const handleLoginSuccess = () => {
+
+      }
+
+      return  (
+        <div className="App">
+            <Router>
+            {/* <Navigation /> */}
+              <Routes>
+                <Route path="/" element={<SignInScreen onLoginSuccess={handleLoginSuccess} />} />
+                <Route path="/accounts" element={<Accounts/>} />
+                <Route path="/history" element={<History />} />
+                <Route path="/contracts" element={<Contracts />} /> 
+              </Routes>
+            </Router>
+        </div>);
 }
+
 
 export default App;
