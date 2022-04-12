@@ -9,11 +9,11 @@ import  Table  from 'react-bootstrap/Table';
 // const web3 = new Web3(new Web3.providers.WebsocketProvider("ws://localhost:3334"))
 const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"))
 
-var accounts = [];
 
 function Accounts(props) {
 
     const [wallet, setWallet] = useState({});
+    const [accounts, setAccounts] = useState([]);
     const [fromAddress, setFromAddress] = useState("");
     const [toAddress, setToAddress] = useState("");
     const [amount, setAmount] = useState("");
@@ -29,7 +29,8 @@ function Accounts(props) {
             for (var i = 0; i < w.length;i++) {
                 addresses.push(w[i].address)
             }
-            getAccountBalances(addresses); 
+            var a = await getAccountBalances(addresses)
+            setAccounts(a); 
         }
         setWallet(w);
     }
@@ -56,7 +57,6 @@ function Accounts(props) {
             <Container>
             <Navigation /> 
                 <div>
-                    <h2>Account Balances</h2>
                     <Table stripped bordered hover size="sm">
                         <thead>
                             <tr>
@@ -137,6 +137,8 @@ function getRandomString(length) {
         var account = {'key': i, 'address': address, 'balance': balance};
         accounts.push(account);        
       }
+
+      return accounts
 }
 
 async function createAccount() {
