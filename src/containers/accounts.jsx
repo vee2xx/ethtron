@@ -14,7 +14,7 @@ function Accounts(props) {
 
     const [wallet, setWallet] = useState({});
     const [accounts, setAccounts] = useState([]);
-    const [fromAddress, setFromAddress] = useState("");
+    const [currentAccount, setCurrentAccount] = useState({});
     const [toAddress, setToAddress] = useState("");
     const [amount, setAmount] = useState("");
 
@@ -23,14 +23,18 @@ function Accounts(props) {
     }, []);
 
     const loadWallet = async() => {
-        var addresses = []
+        var a = [];
         var w = await web3.eth.accounts.wallet.load("default", "start123");
         if (w != null) {
             for (var i = 0; i < w.length;i++) {
-                addresses.push(w[i].address)
+                var address = w[i].address;
+                var privateKey = w[i].privateKey
+                var balance = await getAccountBalance(address)
+                var account = {'key': i, 'address': address, 'balance': balance, 'privateKey': privateKey};
+                a.push(account);  
             }
-            var a = await getAccountBalances(addresses)
             setAccounts(a); 
+            
         }
         setWallet(w);
     }
@@ -49,7 +53,18 @@ function Accounts(props) {
 
     const handleSubmit = (evt) => {
         evt.preventDefault();
-        sendEther(fromAddress, toAddress, amount)
+        sendEther(currentAccount.address, toAddress, amount, currentAccount.privateKey)
+        resetModal();
+    }
+
+    const resetModal = () => {
+        setToAddress("");
+        setAmount("");
+        setCurrentAccount({})
+    }
+
+    const handleRowSelect = (data) => {
+        setCurrentAccount(data.account);
     }
 
     return (
@@ -57,17 +72,21 @@ function Accounts(props) {
             <Container>
             <Navigation /> 
                 <div>
-                    <Table stripped bordered hover size="sm">
+                    <Table stripped  hover size="sm">
                         <thead>
                             <tr>
-                            <th width="170">Account</th>
+                            <th width="10"></th>
+                            <th width="180">Account</th>
                             <th width="50">Balance</th>
                             </tr>
                         </thead> 
                         <tbody>
                             {accounts.map((account, key) => {
-                                return <tr key={key}><td>{account.address}</td>
+                                return <tr key={key}>
+                                    <td><Button  onClick={() => handleRowSelect({account})} className="btn shadow-none btn-light border-white bg-transparent" data-bs-toggle="modal" data-bs-target="#sendEthModal">&#187;</Button></td>
+                                    <td>{account.address}</td>
                                     <td>{account.balance}</td>
+
                                     </tr>;
                                 })}
                         </tbody>
@@ -75,23 +94,27 @@ function Accounts(props) {
                 </div>
                 <div class="btn-group" role="group">
                     <Button className="btn btn-primary mr-3" onClick={addAccount}>Create Account</Button>
-                    <Button className="btn btn-secondary mr-3" data-bs-toggle="modal" data-bs-target="#exampleModal">Send Eth</Button>
-                </div>
-                        
-                <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                </div>  
+                <div className="modal fade" id="sendEthModal" tabIndex="-1" aria-labelledby="sendEthModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                     <div className="modal-header">
-                        <h5 className="modal-title" id="exampleModalLabel">Modal title</h5>
+                        <h5 className="modal-title" id="sendEthModalLabel">Modal title</h5>
                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div className="modal-body">
                     <form onSubmit={handleSubmit}>
                         <div className="mb-3">
+                        </div>
+                        <div className="mb-3">
                             <label for="accountFrom" className="form-label">From</label>
-                            <input type="text" className="form-control" id="accountFrom
-                            " aria-describedby="accountFromHelp" value={fromAddress} onChange={e => setFromAddress(e.target.value)}/>
-                            <div id="accountFromHelp" className="form-text">Enter the source account</div>
+                            <input type="text" className="form-control" id="accountFrom" aria-describedby="accountFromHelp"  value={currentAccount.address} placeholder={currentAccount.address} readonly/>
+                            <div id="accountFromHelp" className="form-text">Sender address</div>
+                        </div>
+                        <div className="mb-3">
+                            <label for="balance" className="form-label">Current balance</label>
+                            <input type="text" className="form-control" id="balance" aria-describedby="balanceHelp"  value={currentAccount.balance} placeholder={currentAccount.balance} readonly/>
+                            <div id="balanceHelp" className="form-text">The current balance of the sender</div>
                         </div>
                         <div className="mb-3">
                             <label for="accountTo" className="form-label">To</label>
@@ -104,8 +127,8 @@ function Accounts(props) {
                             <div id="amountHelp" className="form-text">Enter the amount of eth to send</div>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" className="btn btn-primary">Submit</button>
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={resetModal}>Cancel</button>
+                            <button type="submit" className="btn btn-primary" data-bs-dismiss="modal">Submit</button>
                         </div>
                         </form>
                     </div>
@@ -129,36 +152,34 @@ function getRandomString(length) {
   }
 
 
- async function getAccountBalances (addresses) {
-    var accounts = [];
-    for (var i = 0; i < addresses.length;i++) {
-        var address = addresses[i];
-        const balance = await web3.eth.getBalance(address);
-        var account = {'key': i, 'address': address, 'balance': balance};
-        accounts.push(account);        
-      }
-
-      return accounts
+ async function getAccountBalance (address) {
+    const balance = await web3.eth.getBalance(address);
+    return balance
 }
 
 async function createAccount() {
     var entropy = getRandomString(16)
     var account = await web3.eth.accounts.create(entropy);
-    console.log(account["address"]);
-    console.log(account["privateKey"]);
     return account;
 }
-async function sendEther(fromAddress, toAddress, amount) {
-    var result = await web3.eth.sendTransaction({
-    from: fromAddress,
-    to: toAddress,
-    gasLimit: "21000",
-    maxFeePerGas: "300",
-    maxPriorityFeePerGas: "10",
-    value: amount,
-    chain: '5777'
-  })
-  console.log(result)
+
+async function sendEther(fromAddress, toAddress, amount, privateKey) {
+
+    const createTransaction = await web3.eth.accounts.signTransaction(
+        {
+           from: fromAddress,
+           to: toAddress,
+           value: amount,
+           gasLimit: 53000
+        },
+        privateKey
+     );
+
+
+     const createReceipt = await web3.eth.sendSignedTransaction(
+        createTransaction.rawTransaction
+     );
+     console.log(createReceipt)
 }
 
 export default Accounts;

@@ -35,4 +35,4 @@ function buildMenu() {
     var fileMenu = {label: 'File', submenu: [{role: 'toggleDevTools'}, isMac ? { role: 'close' } : { role: 'quit' }]}  
     template.push(fileMenu)
     Menu.setApplicationMenu(Menu.buildFromTemplate(template)); 
-  }
+}

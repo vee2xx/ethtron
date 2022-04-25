@@ -1,0 +1,8 @@
+.dropdown-toggle::before {
+    content: none !important;
+}
+
+.bg-light {
+    background-color: white !important;
+}
+

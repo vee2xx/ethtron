@@ -14,6 +14,12 @@ function SignInScreen(props) {
     const onPasswordChange = (event) => {
         setPassword(event.target.value)
     }
+    
+    const handleKeyUp = (event) => {
+        if (event.charCode == 13) {
+            onLogin();
+        }
+    }
 
     const onLogin = () => {
         var savedPassword = localStorage.getItem("ethtron_password")
@@ -39,7 +45,7 @@ function SignInScreen(props) {
                         <Form.Control onChange={onPasswordChange} type="password" placeholder="Password" value={props.password}/>
                     </Form.Group>
                     <div>
-                        <Button onClick={onLogin}>Sign in</Button>
+                        <Button onKeyUp={handleKeyUp} onClick={onLogin}>Sign in</Button>
                     </div>
                 </Form>
             </Container>
