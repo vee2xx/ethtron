@@ -1,0 +1,59 @@
+<html>
+  <head>
+    <title>Ethtron</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+    <script src="app.js"></script>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <h1>Accounts</h1>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Address</th>
+            <th>Balance</th>
+          </tr>
+        </thead>
+        <tbody id="accounts"> 
+        </tbody>
+      </table>
+      <div id="login" class="card text-light bg-dark mb-3 position-absolute top-50 start-50 translate-middle" 
+      style="z-index: 0;">
+          <div class="card-body">
+            <h5 class="card-title">Login</h5>
+            <div style="padding-bottom: 1rem;">
+              <form>
+                <label for="walletName">Wallet Name:</label><br>
+                <input type="text" id="walletName" name="walletName" value="default"><br>
+                <label for="password">Password:</label><br>
+                <input type="text" id="password" name="password">
+              </form>
+              <a href="#" class="btn btn-primary" onClick="login(document.getElementById('walletName').value, 
+            document.getElementById('password').value)">Log in</a>
+              <a href="#" class="btn btn-primary" onClick="createWallet(document.getElementById('walletName').value, 
+              document.getElementById('password').value)">Create wallet</a>
+            </div>
+          </div>
+      </div>  
+      <div id="addAccounts" class="card text-light bg-dark mb-3 position-absolute top-50 start-50 translate-middle"  
+      style="z-index: 1;display:none;">
+        <div class="card-body">
+          <h5 class="card-title">Create a wallet</h5>
+          <div style="padding-bottom: 1rem;">
+            <form>
+              <label for="walletName">Wallet Name:</label><br>
+              <input type="text" id="walletName" name="walletName" value="default"><br>
+              <label for="password">Password:</label><br>
+              <input type="text" id="password" name="password" value="start123">
+              <label for="numAccounts">Number of Accounts:</label><br>
+              <input type="text" id="numAccounts" name="numAccounts" value="1">
+            </form>
+            <a href="#" class="btn btn-primary" onClick="addAccounts(document.getElementById('walletName').value, 
+      document.getElementById('password').value, document.getElementById('numAccounts').value)">OK</a> 
+          </div> 
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
