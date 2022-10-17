@@ -1,61 +1,18 @@
 {
   "name": "ethtron",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "react-bootstrap": "^2.0.2",
-    "react-router-dom": "^6.0.2",
-    "electron": "^18.0.1",
-    "@electron/remote": "^2.0.4",
-    "bootstrap": "^5.1.3",
-    "concurrently": "^7.0.0",
-    "wait-on": "^6.0.0",
-    "web3": "^1.6.1"
-  },
-  "homepage": "./",
-  "main": "src/electron-starter.js",
+  "version": "1.0.0",
+  "description": "Local Ethereum wallet manager",
+  "main": "main.js",
+  "author": "",
+  "license": "MIT",
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
-    "eject": "react-app-rewired eject",
-    "electron": "electron .",
-    "dev": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\""
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "start": "electron ."
   },
   "devDependencies": {
-    "electron-is-dev": "^2.0.0",
-    "react-scripts": "5.0.0",
-    "assert": "^2.0.0",
-    "buffer": "^6.0.3",
-    "crypto-browserify": "^3.12.0",
-    "https-browserify": "^1.0.0",
-    "os-browserify": "^0.3.0",
-    "path-browserify":"^1.0.1",
-    "fs":"^0.0.1-security",
-    "process": "^0.11.10",
-    "react-app-rewired": "^2.2.1",
-    "stream-browserify": "^3.0.0",
-    "stream-http": "^3.2.0",
-    "url": "^0.11.0"
+    "electron": "^19.0.0"
+  },
+  "dependencies": {
+    "pbkdf2-hmac": "^1.0.4",
+    "web3": "^1.6.1"
   }
 }

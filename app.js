@@ -1,15 +1,23 @@
 'use strict';
 const electron = require('electron');
 const Web3 = require("web3");
+const fs = require("fs");
 // const web3Provider = new Web3.providers.WebsocketProvider("ws://localhost:3334")
 const web3Provider = new Web3.providers.WebsocketProvider("http://localhost:7545")
 const web3 = new Web3(web3Provider);
 // const dialog = electron.remote.dialog;
 // const menu = electron.remote.Menu;
-const isMac = process.platform === 'darwin'
+
 const crypto = require('crypto')
+const base58 = require('bs58');
+const { bytesToHex, toNumber } = require('web3-utils');
+const EC = require('elliptic').ec;
+const ec = new EC('secp256k1');
+const keccak = require('keccak')
+
 const wallet = require('./wallet.js');
-const { binary_to_base58 } = require('base58-js')
+
+const isMac = process.platform === 'darwin'
 
 
 function initialize () {
@@ -31,8 +39,8 @@ function login(walletName, password) {
 }
 
 function createWallet(walletName, password) {
-    let seed = wallet.generateSeed(password);
-    let masterKey = wallet.generateMasterKey(seed)
+    var w = wallet.createWallet(password);
+    console.log(w)
 }
 
 
@@ -44,20 +52,20 @@ async function getBalance(address) {
 }
 
 async function addAccounts(walletName, password, numAccounts) {
-  if (wallet == null) {
-    // wallet = await web3.eth.accounts.wallet.create(numAccounts);
-  }
-  for (var i = 0; i < numAccounts;i++) {
-   var account = await createAccount();
-   wallet.add(account.address);
-  }
-  wallet.save(walletName, password);
-  window.document.querySelector('#addAccounts').style.display = "none";
+  // if (wallet == null) {
+  //   // wallet = await web3.eth.accounts.wallet.create(numAccounts);
+  // }
+  // for (var i = 0; i < numAccounts;i++) {
+  //  var account = await createAccount();
+  //  wallet.add(account.address);
+  // }
+  // wallet.save(walletName, password);
+  // window.document.querySelector('#addAccounts').style.display = "none";
 }
 
 async function getWallet(walletName, password) {
-  var wallet = await web3.eth.accounts.wallet.load(walletName, password);
-  return wallet;
+  // var wallet = await web3.eth.accounts.wallet.load(walletName, password);
+  // return wallet;
 }
 
 async function sendEther(address) {
