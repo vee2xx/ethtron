@@ -10,7 +10,7 @@ const VERSION_BYTES = {
     'testnet_private': hexStringToByteArray('04358394'),
 }
 
-function createWallet(password) {
+function createWallet(password, numAddresses) {
     var walletInfo = {'mnemonicPhrase': '', 'seed': '', 'rootkey': '', 'addresses': [], 'extendedPrivateKey': ''};
     let phrase = generateMnemonic();
     walletInfo['mnemonicPhrase'] = phrase
@@ -34,34 +34,36 @@ function createWallet(password) {
     // m/44'/60'/0'/0/0
     // add 2**31 to hardened child keys
     //TODO: read more on this
-    var pathNumbers = [2147483692, 2147483708, 2147483648, 0, 0];
-    var depth = 0;
-    var parentFingerprint = null;
-    var childNumber = null;
-    var privateKey = masterPrivateKey;
-    var chainCode = masterChainCode;
-
-    for (var i = 0; i < pathNumbers.length; i++) {
-        depth += 1;
-        childNumber = pathNumbers[i];
-        parentFingerprint = fingerPrintFromPrivateKey(privateKey);
-        var child = extendedFromPrivateKey(privateKey, chainCode, childNumber);
-        privateKey = numberToUintArrayBE(child.childPrivateKey, 32);
-        chainCode = child.childChainCode;
+    for(var i = 0; i < numAddresses; i++) {
+        var pathNumbers = [2147483692, 2147483708, 2147483648, 0, i];
+        var depth = 0;
+        var parentFingerprint = null;
+        var childNumber = null;
+        var privateKey = masterPrivateKey;
+        var chainCode = masterChainCode;
+    
+        for (var i = 0; i < pathNumbers.length; i++) {
+            depth += 1;
+            childNumber = pathNumbers[i];
+            parentFingerprint = fingerPrintFromPrivateKey(privateKey);
+            var child = extendedFromPrivateKey(privateKey, chainCode, childNumber);
+            privateKey = numberToUintArrayBE(child.childPrivateKey, 32);
+            chainCode = child.childChainCode;
+        }
+    
+        walletInfo['extendedPrivateKey'] = generateExtendedKey(privateKey, chainCode, numberToUintArrayBE(depth, 1),  numberToUintArrayBE(parentFingerprint, 4), numberToUintArrayBE(childNumber, 4))
+        
+        var pCurve = curvePointFromInt(privateKey);
+        
+    
+        var xy = new Uint8Array(64);
+        xy.set(pCurve.getX().toArray(), 0);
+        xy.set(pCurve.getY().toArray(), 32);
+        
+        var xyHash = keccak('keccak256').update(Buffer.from(xy)).digest();
+        var address = {'address': '0x' + toHexString(xyHash.slice(12, xyHash.length)), 'publicKey': pCurve, 'privateKey': privateKey};
+        walletInfo['addresses'].push(address);
     }
-
-    walletInfo['extendedPrivateKey'] = generateExtendedKey(privateKey, chainCode, numberToUintArrayBE(depth, 1),  numberToUintArrayBE(parentFingerprint, 4), numberToUintArrayBE(childNumber, 4))
-    
-    var pCurve = curvePointFromInt(privateKey);
-
-    var xy = new Uint8Array(64);
-    xy.set(pCurve.getX().toArray(), 0);
-    xy.set(pCurve.getY().toArray(), 32);
-    
-    var xyHash = keccak('keccak256').update(Buffer.from(xy)).digest();
-    var address = '0x' + toHexString(xyHash.slice(12, xyHash.length));
-    walletInfo['addresses'].push(address);
-
     return walletInfo;
 }
 

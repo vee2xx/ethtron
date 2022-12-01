@@ -39,7 +39,7 @@ function login(walletName, password) {
 }
 
 function createWallet(walletName, password) {
-    var w = wallet.createWallet(password);
+    var w = wallet.createWallet(password, 5);
     console.log(w)
 }
 
