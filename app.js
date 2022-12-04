@@ -16,34 +16,53 @@ const ec = new EC('secp256k1');
 const keccak = require('keccak')
 
 const wallet = require('./wallet.js');
+const storage = require('./storage.js');
 
 const isMac = process.platform === 'darwin'
 
+const AES256 = 'aes-256-ctr';
+
+const datastore_name = 'storage';
+
+var currentWallet;
 
 function initialize () {
+  if (!fs.existsSync(datastore_name)) {
+    window.document.querySelector('#loginBtn').style.display = "none";
+
+  } else {
+    window.document.querySelector('#createBtn').style.display = "none";
+  }
   // addMenu();
 }
 
 function login(walletName, password) {
-  var savedWallet = localStorage.getItem("ethtron.wallets." + walletName)
-  savedWallet = JSON.parse(savedWallet)
-  savedWallet = decryptWallet(savedWallet, password)
-  console.log(savedWallet, savedWallet);
-  if (savedWallet != null && savedWallet.length > 0) {
-    loadAccounts();
-  } else {
-    window.document.querySelector('#addAccounts').style.display = "block";
+  currentWallet = getWallet(walletName, password, AES256)
+  if (currentWallet == null) {
+    alert("login incorrect")
+    //TODO: display option to create new wallet
   }
-  
+
+  loadAccounts(currentWallet);
   window.document.querySelector('#login').style.display = "none";
 }
 
 function createWallet(walletName, password) {
-    var w = wallet.createWallet(password, 5);
-    console.log(w)
+    currentWallet = wallet.createWallet(password, 5);
+    storage.saveWallet(walletName, password, currentWallet, AES256 )
+    window.document.querySelector('#loginForm').style.display = "none";
+    window.document.querySelector('#phraseDiv').style.display = "block";
+    window.document.querySelector('#phraseText').value = currentWallet['mnemonicPhrase'];
 }
 
+function onLoginClose() {
+  loadAccounts(currentWallet);
+  window.document.querySelector('#login').style.display = "none";
+}
 
+function getWallet(walletName, password) {
+  return storage.getWallet(walletName, password, AES256);
+}
 
 async function getBalance(address) {
   // const balance = await web3.eth.getBalance(address);
@@ -51,22 +70,6 @@ async function getBalance(address) {
   // return balance;
 }
 
-async function addAccounts(walletName, password, numAccounts) {
-  // if (wallet == null) {
-  //   // wallet = await web3.eth.accounts.wallet.create(numAccounts);
-  // }
-  // for (var i = 0; i < numAccounts;i++) {
-  //  var account = await createAccount();
-  //  wallet.add(account.address);
-  // }
-  // wallet.save(walletName, password);
-  // window.document.querySelector('#addAccounts').style.display = "none";
-}
-
-async function getWallet(walletName, password) {
-  // var wallet = await web3.eth.accounts.wallet.load(walletName, password);
-  // return wallet;
-}
 
 async function sendEther(address) {
     var result = await web3.eth.sendTransaction({
@@ -100,10 +103,10 @@ async function getAccountsFromGeth() {
   }
 }
 
-function loadAccounts() {
+function loadAccounts(currentWallet) {
   var accountTable = window.document.querySelector("#accounts")
-  for (var i = 0; i < wallet.length;i++) {
-    var address = wallet[i].address;
+  for (var i = 0; i < currentWallet.addresses.length;i++) {
+    var address = currentWallet.addresses[i].address;
     var row = document.createElement('tr');
     var addressCell = document.createElement('td');
     addressCell.appendChild(document.createTextNode(address));
@@ -145,24 +148,5 @@ function getRandomString(length) {
  return result;
 }
 
-
-// function addMenu() {
-
-//   var template = []
-
-
-//   var fileMenu = {label: 'File', submenu: [isMac ? { role: 'close' } : { role: 'quit' }]}
-
-//   template.push(fileMenu)
-
-//   var viewSubMenu = [{role: 'toggleDevTools'}]
-
-//   var viewMenu ={label: 'View', submenu: viewSubMenu}
-
-//   template.push(viewMenu)
-
-//   var camMenu = menu.buildFromTemplate(template); 
-//   menu.setApplicationMenu(camMenu); 
-// }
 
 window.onload = initialize;

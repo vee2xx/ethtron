@@ -54,14 +54,13 @@ function createWallet(password, numAddresses) {
         walletInfo['extendedPrivateKey'] = generateExtendedKey(privateKey, chainCode, numberToUintArrayBE(depth, 1),  numberToUintArrayBE(parentFingerprint, 4), numberToUintArrayBE(childNumber, 4))
         
         var pCurve = curvePointFromInt(privateKey);
-        
     
         var xy = new Uint8Array(64);
         xy.set(pCurve.getX().toArray(), 0);
         xy.set(pCurve.getY().toArray(), 32);
         
         var xyHash = keccak('keccak256').update(Buffer.from(xy)).digest();
-        var address = {'address': '0x' + toHexString(xyHash.slice(12, xyHash.length)), 'publicKey': pCurve, 'privateKey': privateKey};
+        var address = {'address': '0x' + toHexString(xyHash.slice(12, xyHash.length)), 'publicKey': toHexString(serializeCurvePoint(pCurve)), 'privateKey': privateKey};
         walletInfo['addresses'].push(address);
     }
     return walletInfo;

@@ -21,19 +21,25 @@
       <div id="login" class="card text-light bg-dark mb-3 position-absolute top-50 start-50 translate-middle" 
       style="z-index: 0;">
           <div class="card-body">
-            <h5 class="card-title">Login</h5>
-            <div style="padding-bottom: 1rem;">
+            <div id="loginForm" style="padding-bottom: 1rem;">
+              <h5 class="card-title">Login</h5>
               <form>
                 <label for="walletName">Wallet Name:</label><br>
                 <input type="text" id="walletName" name="walletName" value="default"><br>
                 <label for="password">Password:</label><br>
                 <input type="text" id="password" name="password">
               </form>
-              <a href="#" class="btn btn-primary" onClick="login(document.getElementById('walletName').value, 
+              <a href="#" id="loginBtn" class="btn btn-primary" onClick="login(document.getElementById('walletName').value, 
             document.getElementById('password').value)">Log in</a>
-              <a href="#" class="btn btn-primary" onClick="createWallet(document.getElementById('walletName').value, 
+              <a href="#" id="createBtn" class="btn btn-primary" onClick="createWallet(document.getElementById('walletName').value, 
               document.getElementById('password').value)">Create wallet</a>
             </div>
+            <div id="phraseDiv" style="display:none;" >
+              <label>Please copy and save the phrase below. You will not be able to retrieve your wallet without it should you forget your password. I am not kidding!! Save it! It will not be displayed again!!</label>
+              <textarea id="phraseText" style="width: 400px;margin-top: 10px;margin-bottom: 10px;"></textarea>
+              <a href="#" id="loginBtn" class="btn btn-primary" onClick="onLoginClose();">OK</a>
+            </div>
+            
           </div>
       </div>  
       <div id="addAccounts" class="card text-light bg-dark mb-3 position-absolute top-50 start-50 translate-middle"  
