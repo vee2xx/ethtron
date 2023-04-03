@@ -33,7 +33,14 @@ function initialize () {
   } else {
     window.document.querySelector('#createBtn').style.display = "none";
   }
-  // addMenu();
+}
+
+function showSendWindow() {
+  window.document.querySelector('#sendEth').style.display = "block";
+}
+
+function closeSendWindow() {
+  window.document.querySelector('#sendEth').style.display = "none";
 }
 
 function login(walletName, password) {
@@ -42,7 +49,6 @@ function login(walletName, password) {
     alert("login incorrect")
     //TODO: display option to create new wallet
   }
-
   loadAccounts(currentWallet);
   window.document.querySelector('#login').style.display = "none";
 }
@@ -65,16 +71,16 @@ function getWallet(walletName, password) {
 }
 
 async function getBalance(address) {
-  // const balance = await web3.eth.getBalance(address);
+  const balance = await web3.eth.getBalance(address);
   alert(balance);
   // return balance;
 }
 
 
-async function sendEther(address) {
+async function sendEther(sender, recipient) {
     var result = await web3.eth.sendTransaction({
-    from: "0x6E4eD8c06E0926D20DBA9Fa09CAF981e34a76F93",
-    to: address,
+    from: sender,
+    to: recipient,
     gasLimit: "21000",
     maxFeePerGas: "300",
     maxPriorityFeePerGas: "10",
@@ -82,6 +88,8 @@ async function sendEther(address) {
     chain: '5777'
   })
   console.log(result)
+  window.document.querySelector('#sendEth').style.display = "none";
+
 }
 
 async function getAccountsFromGeth() {
@@ -108,6 +116,14 @@ function loadAccounts(currentWallet) {
   for (var i = 0; i < currentWallet.addresses.length;i++) {
     var address = currentWallet.addresses[i].address;
     var row = document.createElement('tr');
+    var buttonCell = document.createElement('td');
+    var sendButton = document.createElement("button");
+    sendButton.data = "SendEth";
+    sendButton.innerHTML = '...';
+    sendButton.onclick = function()
+    {
+      showSendWindow();
+    }
     var addressCell = document.createElement('td');
     addressCell.appendChild(document.createTextNode(address));
 
@@ -118,7 +134,7 @@ function loadAccounts(currentWallet) {
     {
       getBalance(address)
     }
-
+    row.appendChild(sendButton);
     row.appendChild(addressCell);
     row.appendChild(balanceButton);
     accountTable.appendChild(row);

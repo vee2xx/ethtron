@@ -42,21 +42,20 @@
             
           </div>
       </div>  
-      <div id="addAccounts" class="card text-light bg-dark mb-3 position-absolute top-50 start-50 translate-middle"  
+      <div id="sendEth" class="card text-light bg-dark mb-3 position-absolute top-50 start-50 translate-middle"  
       style="z-index: 1;display:none;">
         <div class="card-body">
-          <h5 class="card-title">Create a wallet</h5>
+          <h5 class="card-title">Send Ether</h5>
           <div style="padding-bottom: 1rem;">
             <form>
-              <label for="walletName">Wallet Name:</label><br>
-              <input type="text" id="walletName" name="walletName" value="default"><br>
-              <label for="password">Password:</label><br>
-              <input type="text" id="password" name="password" value="start123">
-              <label for="numAccounts">Number of Accounts:</label><br>
-              <input type="text" id="numAccounts" name="numAccounts" value="1">
+              <label for="sender">Sender:</label><br>
+              <input type="text" id="sender" name="sender"><br>
+              <label for="recipient">Password:</label><br>
+              <input type="text" id="recipient" name="recipient">
             </form>
-            <a href="#" class="btn btn-primary" onClick="addAccounts(document.getElementById('walletName').value, 
-      document.getElementById('password').value, document.getElementById('numAccounts').value)">OK</a> 
+            <a href="#" class="btn btn-primary" onClick="sendEther(document.getElementById('sender').value, 
+      document.getElementById('recipient').value)">Send</a> 
+            <a href="#" class="btn btn-primary" onClick="closeSendWindow()">Cancel</a> 
           </div> 
         </div>
       </div>
